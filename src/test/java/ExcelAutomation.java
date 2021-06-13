@@ -14,14 +14,23 @@ public class ExcelAutomation {
 	// "Purchase" testcase
 	// Once Purchase is identified then fetch all the data of that row and feed into
 	// test
+
 	public static void main(String[] args) throws IOException {
 
+		ExcelAutomation excel = new ExcelAutomation();
+		ArrayList<String> al = excel.getData("Purchase");
+		System.out.println(al);
+
+	}
+
+	public ArrayList<String> getData(String testCaseName) throws IOException {
 		// FileInputStream fis= new
 		// FileInputStream("/Volumes/Development/Automation/ExcelDataDriven/ExcelTestData.xlsx");
 		// XSSFWorkbook workBook=new XSSFWorkbook(fis);
+
 		int index = 0;
 		XSSFWorkbook workBook = new XSSFWorkbook("/Volumes/Development/Automation/ExcelDataDriven/ExcelTestData.xlsx");
-		ArrayList<String>al=new ArrayList<String>();
+		ArrayList<String> al = new ArrayList<String>();
 
 		int sheetCount = workBook.getNumberOfSheets();
 
@@ -40,31 +49,26 @@ public class ExcelAutomation {
 					if (value.getStringCellValue().equalsIgnoreCase("TestCases")) {
 						index = value.getColumnIndex();
 					}
-					
+
 				}
-				
-				while(row.hasNext())
-				{
-					Row r= row.next();
-					String rowValue=r.getCell(index).getStringCellValue();
-					if(rowValue.equalsIgnoreCase("Purchase"))
-					{
-						Iterator<Cell>c=r.cellIterator();
-						while(c.hasNext())
-						{
-							Cell c1=c.next();
+
+				while (row.hasNext()) {
+					Row r = row.next();
+					String rowValue = r.getCell(index).getStringCellValue();
+					if (rowValue.equalsIgnoreCase(testCaseName)) {
+						Iterator<Cell> c = r.cellIterator();
+						while (c.hasNext()) {
+							Cell c1 = c.next();
 							al.add(c1.getStringCellValue());
-							
+
 						}
 					}
-					
+
 				}
-				
-				System.out.println(al);
 
 			}
 		}
-
+		return al;
 	}
 
 }
