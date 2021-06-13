@@ -3,7 +3,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.NumberToTextConverter;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -18,19 +20,19 @@ public class ExcelAutomation {
 	public static void main(String[] args) throws IOException {
 
 		ExcelAutomation excel = new ExcelAutomation();
-		ArrayList<String> al = excel.getData("Purchase");
+		ArrayList<Object> al = excel.getData("Purchase");
 		System.out.println(al);
 
 	}
 
-	public ArrayList<String> getData(String testCaseName) throws IOException {
+	public ArrayList<Object> getData(String testCaseName) throws IOException {
 		// FileInputStream fis= new
 		// FileInputStream("/Volumes/Development/Automation/ExcelDataDriven/ExcelTestData.xlsx");
 		// XSSFWorkbook workBook=new XSSFWorkbook(fis);
 
 		int index = 0;
 		XSSFWorkbook workBook = new XSSFWorkbook("/Volumes/Development/Automation/ExcelDataDriven/ExcelTestData.xlsx");
-		ArrayList<String> al = new ArrayList<String>();
+		ArrayList<Object> al = new ArrayList<Object>();
 
 		int sheetCount = workBook.getNumberOfSheets();
 
@@ -54,12 +56,23 @@ public class ExcelAutomation {
 
 				while (row.hasNext()) {
 					Row r = row.next();
+
 					String rowValue = r.getCell(index).getStringCellValue();
 					if (rowValue.equalsIgnoreCase(testCaseName)) {
 						Iterator<Cell> c = r.cellIterator();
 						while (c.hasNext()) {
 							Cell c1 = c.next();
-							al.add(c1.getStringCellValue());
+
+							if (c1.getCellType().equals(CellType.STRING)) {
+								al.add(c1.getStringCellValue());
+							} else if (c1.getCellType().equals(CellType.NUMERIC)) {
+
+								al.add(NumberToTextConverter.toText(c1.getNumericCellValue()));
+							} else if (c1.getCellType().equals(CellType.BOOLEAN)) {
+								al.add(c1.getBooleanCellValue());
+							} else if (c1.getCellType().equals(CellType.BLANK)) {
+								al.add(c1.getErrorCellValue());
+							}
 
 						}
 					}
